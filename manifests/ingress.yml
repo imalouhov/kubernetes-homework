@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubernetes-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - pathType: Prefix
+            path: /health
+            backend:
+              service:
+                name: kubernetes-service
+                port:
+                  number: 8080
+#    - http:
+#        paths:
+#          - pathType: Prefix
+#            path: /actuator/health
+#            backend:
+#              service:
+#                name: kubernetes-service
+#                port:
+#                  number: 8080
+#    - http:
+#        paths:
+#          - pathType: Prefix
+#            path: /v3/api-docs
+#            backend:
+#              service:
+#                name: kubernetes-service
+#                port:
+#                  number: 8080
