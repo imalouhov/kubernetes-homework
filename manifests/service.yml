@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: kubernetes-service
+  name: kubernetes-homework
 spec:
   type: NodePort
   selector:
-    app.kubernetes.io/name: kubernetes-deployment
+    app.kubernetes.io/name: kubernetes-homework
   ports:
     - protocol: TCP
       port: 8080
