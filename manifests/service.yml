@@ -1,13 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: kubernetes-homework
+  name: kubernetes-service
+#  labels:
+#    app: kubernetes-homework
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
-    app.kubernetes.io/name: kubernetes-homework
+    app: kubernetes-homework
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 8080
       targetPort: 8080
-      nodePort: 30000

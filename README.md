@@ -13,47 +13,33 @@ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 minikube start --vm-driver hyperv # --force  
 minikube addons enable ingress  
 
-kubectl apply -f deployment.yml  
-kubectl get deployments  
-NAME                  READY   UP-TO-DATE   AVAILABLE   AGE  
-kubernetes-homework   1/1     1            1           13s  
+kubectl create namespace homework
+kubectl apply -f . -n=homework
+kubectl delete -f . -n=homework
 
+ipconfig /flushdns
+minikube service kubernetes-service
+
+
+
+kubectl apply -f deployment.yml  
+kubectl get deployments
 kubectl get pod  
-NAME                                   READY   STATUS    RESTARTS   AGE  
-kubernetes-homework-7668f8bd44-44qjl   1/1     Running   0          26s  
 
 kubectl apply -f service.yml  
-kubectl get service  
-NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE  
-kubernetes           ClusterIP   10.96.0.1       <none>        443/TCP          83s  
-kubernetes-service   NodePort    10.105.65.121   <none>        8080:30000/TCP   6s  
+kubectl get service
 
 kubectl get nodes -o wide  
-NAME       STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE              KERNEL-VERSION   CONTAINER-RUNTIME  
-minikube   Ready    <none>   37m   v1.31.0   172.21.197.44   <none>        Buildroot 2023.02.9   5.10.207         docker://27.2.0  
 
-kubectl apply -f ingress.yml  
-NAME                 CLASS   HOSTS           ADDRESS   PORTS   AGE  
-kubernetes-ingress   nginx   arch.homework             80      8s  
+kubectl apply -f ingress.yml   
 
-curl http://arch.homework:80/health  
-curl : Unable to connect to the remote server  
-At line:1 char:1  
-+ curl http://arch.homework:80/health  
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
-    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebException  
-    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand  
+curl http://arch.homework:80/health   
 
 minikube ip  
-172.21.197.44  
-curl http://172.21.197.44:80/health/  
-curl : Unable to connect to the remote server  
-At line:1 char:1  
-+ curl http://172.21.197.44:80/health/  
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
-    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebException  
-    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand  
+172.17.232.155  
+curl http://172.17.232.155:80/health/  
 
+kubectl describe service kubernetes-homework
 
 kubectl delete ingress --all  
 kubectl delete service --all  
@@ -61,7 +47,50 @@ kubectl delete deploy --all
 minikube stop  
 
 
-kubectl logs kubernetes-homework-deployment-7d85b8864c-ktjks  
+minikube delete --all --purge
+kubectl logs kubernetes-homework-7d85b8864c-kcg77 
 kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission  
 curl http://localhost:8080/actuator/health  
-curl http://localhost:8080/v3/api-docs  
+curl http://localhost:8080/v3/api-docs
+
+PS C:\Users\pusto\Documents\java projects\kubernetes-homework\manifests> kubectl get service
+NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+kubernetes            ClusterIP   10.96.0.1        <none>        443/TCP          114s
+kubernetes-homework   NodePort    10.103.202.215   <none>        8080:30000/TCP   88s
+PS C:\Users\pusto\Documents\java projects\kubernetes-homework\manifests> minikube service kubernetes-homework
+|-----------|---------------------|-------------|-----------------------------|
+| NAMESPACE |        NAME         | TARGET PORT |             URL             |
+|-----------|---------------------|-------------|-----------------------------|
+| default   | kubernetes-homework |        8080 | http://172.17.232.155:30000 |
+|-----------|---------------------|-------------|-----------------------------|
+
+❌  Exiting due to SVC_UNREACHABLE: service not available: no running pod for service kubernetes-homework found
+
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                                           │
+│    😿  If the above advice does not help, please let us know:                                             │
+│    👉  https://github.com/kubernetes/minikube/issues/new/choose                                           │
+│                                                                                                           │
+│    Please run `minikube logs --file=logs.txt` and attach logs.txt to the GitHub issue.                    │
+│    Please also attach the following file to the GitHub issue:                                             │
+│    - C:\Users\pusto\AppData\Local\Temp\minikube_service_66e1fe5394effddea239e5945616811750aef126_0.log    │
+│                                                                                                           │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+PS C:\Users\pusto\Documents\java projects\kubernetes-homework\manifests> kubectl get svc -n ingress-nginx
+NAME                                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx-controller             NodePort    10.103.100.64   <none>        80:31324/TCP,443:32052/TCP   2d21h
+ingress-nginx-controller-admission   ClusterIP   10.105.160.29   <none>        443/TCP                      2d21h
+
+
+PS C:\Users\pusto\Documents\java projects\kubernetes-homework\manifests> kubectl get pods -n kube-system
+NAME                               READY   STATUS    RESTARTS        AGE
+coredns-6f6b679f8f-8mxmd           1/1     Running   3 (9m ago)      2d21h
+etcd-minikube                      1/1     Running   1 (9m5s ago)    2d7h
+kube-apiserver-minikube            1/1     Running   1 (8m54s ago)   2d7h
+kube-controller-manager-minikube   1/1     Running   3 (9m5s ago)    2d21h
+kube-proxy-w85qh                   1/1     Running   3 (9m4s ago)    2d21h
+kube-scheduler-minikube            1/1     Running   3 (9m5s ago)    2d21h
+storage-provisioner                1/1     Running   5 (9m5s ago)    2d21h
+
+

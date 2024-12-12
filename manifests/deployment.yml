@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kubernetes-homework
-  labels:
-    app: kubernetes-homework
+  name: kubernetes-deployment
+#  labels:
+#    app: kubernetes-deployment
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,10 @@ spec:
         app: kubernetes-homework
     spec:
       containers:
-        - name: kubernetes-homework
-          image: imalouhov/kubernetes-homework:0.0.1
+        - image: imalouhov/kubernetes-homework:0.0.1
+          name: homework-pod
+          imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8080
+              protocol: TCP
